@@ -1,0 +1,21 @@
+{
+  "name": "workers-proxy",
+  "version": "0.1.0",
+  "description": "",
+  "main": "src/index.ts",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc && esbuild src/index.ts --bundle --outfile=dist/index.js --platform=neutral --packages=external --format=esm --sourcemap"
+  },
+  "keywords": [],
+  "author": "Jesse Sibley <jesse@subfold.io>",
+  "license": "MIT",
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240405.0",
+    "esbuild": "^0.20.2",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "path-to-regexp": "^6.2.2"
+  }
+}
