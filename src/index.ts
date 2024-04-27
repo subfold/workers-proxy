@@ -7,63 +7,108 @@ export type Rewrite = {
   destination: string;
 };
 
-export type ProxyOptions = {
-  rewrites: Rewrite[];
+export type Redirect = {
+  source: string;
+  destination: string;
+  permanent: boolean;
 };
 
-/**
- * Creates a matcher function for a specific URL pattern.
- *
- * @param pattern - The URL pattern to match, e.g., "/user/:id".
- * @returns A function that takes a URL and returns the extracted parameters or null if no match.
- */
-export function createMatcher(
+export type ProxyOptions = {
+  origin?: string;
+  rewrites?: Rewrite[];
+  redirects?: Redirect[];
+};
+
+export function joinPaths(...segments: string[]): string {
+  return segments.join("/").replace(/\/\/+/g, "/");
+}
+
+export function createPatternMatcher(
   pattern: string,
 ): (url: string) => RouteParams | null {
   const keys: Key[] = [];
   const regexp = pathToRegexp(pattern, keys);
   return (url: string) => {
     const match = regexp.exec(url);
-    if (!match) return null;
-
+    if (!match) {
+      return null;
+    }
     const params: RouteParams = {};
-    keys.forEach((key, index) => {
+    for (let index = 0; index < keys.length; index++) {
+      const key = keys[index];
       if (typeof key.name === "string") {
-        // Ensuring the key name is a string.
         params[key.name] = match[index + 1];
       }
-    });
+    }
     return params;
   };
 }
 
-/**
- * Creates a URL formatter function from a destination pattern.
- *
- * @param destinationPattern - The pattern to use for formatting, e.g., "/profile/:id".
- * @returns A function that takes parameters and returns the formatted URL.
- */
-export function createFormatter(
+export function createPatternFormatter(
   destinationPattern: string,
 ): (params: RouteParams) => string {
-  const compilePath = compile(destinationPattern);
-  return (params: RouteParams) => compilePath(params);
+  const compilePath = compile(destinationPattern, { validate: false });
+  return (params: RouteParams) => {
+    return compilePath(params);
+  };
 }
 
-/**
- * Creates a proxy handler function
- * @param options
- */
-export function createProxy(options: ProxyOptions) {
-  const handler = (request: Request) => {
-    for (const rewrite of options.rewrites) {
-      const matchUrl = createMatcher(rewrite.source);
-      const matchedParams = matchUrl(request.url);
+export function matchRule(
+  rule: Rewrite | Redirect,
+  requestUrl: URL,
+): string | null {
+  const matchSource = createPatternMatcher(rule.source);
+  const matchedParams = matchSource(
+    requestUrl.toString().replace(requestUrl.origin, ""),
+  );
+  if (!matchedParams) {
+    return null;
+  }
+  const destionationUrl = new URL(rule.destination);
+  const formatPath = createPatternFormatter(
+    destionationUrl.toString().replace(destionationUrl.origin, ""),
+  );
+  destionationUrl.pathname = formatPath(matchedParams);
+  return destionationUrl.toString();
+}
 
-      if (matchedParams) {
-        const formatUrl = createFormatter(rewrite.destination);
-        return fetch(formatUrl(matchedParams));
+export function proxy(url: string, request: Request): Promise<Response> {
+  const proxiedRequest = new Request(url, request);
+  proxiedRequest.headers.set(
+    "x-forwarded-for",
+    request.headers.get("cf-connecting-ip") || "",
+  );
+  proxiedRequest.headers.set(
+    "x-forwarded-host",
+    request.headers.get("host") || "",
+  );
+  proxiedRequest.headers.set("x-forwarded-proto", "https");
+  return fetch(url, request);
+}
+
+export function createProxy(options: ProxyOptions) {
+  const handler = async (initialRequest: Request) => {
+    const requestUrl = new URL(initialRequest.url);
+    if (options.redirects) {
+      for (const redirect of options.redirects) {
+        const redirectUrl = matchRule(redirect, requestUrl);
+        if (redirectUrl) {
+          return Response.redirect(redirectUrl, redirect.permanent ? 308 : 307);
+        }
       }
+    }
+    if (options.rewrites) {
+      for (const rewrite of options.rewrites) {
+        const proxiedUrl = matchRule(rewrite, requestUrl);
+        if (proxiedUrl) {
+          return proxy(proxiedUrl, initialRequest);
+        }
+      }
+    }
+    if (options.origin) {
+      const originUrl = new URL(options.origin);
+      originUrl.pathname = joinPaths(originUrl.pathname, requestUrl.pathname);
+      return proxy(originUrl.toString(), initialRequest);
     }
     return new Response("Not Found", { status: 404 });
   };
