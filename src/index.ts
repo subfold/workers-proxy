@@ -88,29 +88,37 @@ export function proxy(url: string, request: Request): Promise<Response> {
 
 export function createProxy(options: ProxyOptions) {
   const handler = async (initialRequest: Request) => {
-    const requestUrl = new URL(initialRequest.url);
-    if (options.redirects) {
-      for (const redirect of options.redirects) {
-        const redirectUrl = matchRule(redirect, requestUrl);
-        if (redirectUrl) {
-          return Response.redirect(redirectUrl, redirect.permanent ? 308 : 307);
+    try {
+      const requestUrl = new URL(initialRequest.url);
+      if (options.redirects) {
+        for (const redirect of options.redirects) {
+          const redirectUrl = matchRule(redirect, requestUrl);
+          if (redirectUrl) {
+            return Response.redirect(
+              redirectUrl,
+              redirect.permanent ? 308 : 307,
+            );
+          }
         }
       }
-    }
-    if (options.rewrites) {
-      for (const rewrite of options.rewrites) {
-        const proxiedUrl = matchRule(rewrite, requestUrl);
-        if (proxiedUrl) {
-          return proxy(proxiedUrl, initialRequest);
+      if (options.rewrites) {
+        for (const rewrite of options.rewrites) {
+          const proxiedUrl = matchRule(rewrite, requestUrl);
+          if (proxiedUrl) {
+            return proxy(proxiedUrl, initialRequest);
+          }
         }
       }
+      if (options.origin) {
+        const originUrl = new URL(options.origin);
+        originUrl.pathname = joinPaths(originUrl.pathname, requestUrl.pathname);
+        return proxy(originUrl.toString(), initialRequest);
+      }
+      return new Response("Not Found", { status: 404 });
+    } catch (error) {
+      console.log(error);
+      return new Response("Internal Server Error", { status: 500 });
     }
-    if (options.origin) {
-      const originUrl = new URL(options.origin);
-      originUrl.pathname = joinPaths(originUrl.pathname, requestUrl.pathname);
-      return proxy(originUrl.toString(), initialRequest);
-    }
-    return new Response("Not Found", { status: 404 });
   };
   return handler;
 }

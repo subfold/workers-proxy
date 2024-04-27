@@ -1,4 +1,4 @@
-import { createProxy } from "../../src/";
+import { createProxy } from "../src/";
 
 export default {
   fetch: createProxy({
