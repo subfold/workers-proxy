@@ -1,7 +1,6 @@
 # WIP: Cloudflare Workers Proxy
 
-**workers-proxy** is a simple declarative library for creating reverse proxies
-with Cloudflare Workers.
+A simple library for creating reverse proxies with Cloudflare Workers.
 
 ## Installation
 
