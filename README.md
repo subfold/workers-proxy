@@ -25,3 +25,9 @@ export default {
   }),
 };
 ```
+
+### Origin
+
+### Rewrites
+
+### Redirects
