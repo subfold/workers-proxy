@@ -22,16 +22,6 @@ export default {
         destination: "http://blog.example.com",
       },
     ],
-    transforms: [
-      {
-        path: '/blog/:path*',
-        transform: (response) => {
-          return new HTMLRewriter()
-            .on('a', LinkRewriter({ prefix: '/blog' })
-            .transform(response);
-        }
-      },
-    ],
   }),
 };
 ```
