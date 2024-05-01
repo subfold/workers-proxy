@@ -28,4 +28,4 @@ export default {
 
 ## Options
 
-The `createProxy()` function takes a `ProxyOptions` object.
+#### Rewrites
