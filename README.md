@@ -26,8 +26,6 @@ export default {
 };
 ```
 
-### Origin
+## Options
 
-### Rewrites
-
-### Redirects
+The `createProxy()` function takes a `ProxyOptions` object.
