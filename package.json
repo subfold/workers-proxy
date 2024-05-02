@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc && esbuild src/index.ts --bundle --outfile=dist/index.js --platform=neutral --packages=external --format=esm --sourcemap",
-    "test:unit": "vitest",
+    "test:unit": "vitest ./src/*.test.ts",
     "test:playwright": "playwright test",
     "test": "pnpm test:unit && pnp test:playwright"
   },
