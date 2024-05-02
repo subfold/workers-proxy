@@ -34,9 +34,8 @@ The `origin` option is the URL of the target server you want to proxy requests t
 
 The `rewrites` option is an array of rewrite rules that will be applied to the requested URL before it is proxied to the target server. Each rule is an object with the following properties:
 
-- `source` - The pattern to match against the requested URL pathname. Patterns can contain named parameters prefixed with a colon (e.g. `:path*`). Parameters are accessible in the `destination` URL using the same name. Learn more about formatting patterns in the [path-to-regexp](https://github.com/pillarjs/path-to-regexp) documentation.
-
-- `destination` - The URL to proxy the request to. Parameters from the `source` pattern can be used in the `destination` URL.
+- **source** - The pattern to match against the requested URL pathname. Patterns can contain named parameters prefixed with a colon (e.g. `:path*`). Parameters are accessible in the `destination` URL using the same name. Learn more about formatting patterns in the [path-to-regexp](https://github.com/pillarjs/path-to-regexp) documentation.
+- **destination** - The URL to proxy the request to. Parameters from the `source` pattern can be used in the `destination` URL.
 
 The format of rewrites is inspired by [Next.js rewrites](https://nextjs.org/docs/api-reference/next-config-js/rewrites).
 
@@ -44,10 +43,8 @@ The format of rewrites is inspired by [Next.js rewrites](https://nextjs.org/docs
 
 The `redirects` option is an array of redirect rules that will be applied to the requested URL before it is proxied to the target server. Each rule is an object with the following properties:
 
-- `source` - The pattern to match against the requested URL pathname. Patterns can contain named parameters prefixed with a colon (e.g. `:path*`). Parameters are accessible in the `destination` URL using the same name. Learn more about formatting patterns in the [path-to-regexp](https://github.com/pillarjs/path-to-regexp) documentation.
-
-- `destination` - The URL to redirect the request to. Parameters from the `source` pattern can be used in the `destination` URL.
-
-- `permanent` - A boolean value indicating whether the redirect should be permanent (308) or temporary (307).
+- **source** - The pattern to match against the requested URL pathname. Patterns can contain named parameters prefixed with a colon (e.g. `:path*`). Parameters are accessible in the `destination` URL using the same name. Learn more about formatting patterns in the [path-to-regexp](https://github.com/pillarjs/path-to-regexp) documentation.
+- **destination** - The URL to redirect the request to. Parameters from the `source` pattern can be used in the `destination` URL.
+- **permanent** - A boolean value indicating whether the redirect should be permanent (308) or temporary (307).
 
 The format of redirects is inspired by [Next.js redirects](https://nextjs.org/docs/api-reference/next-config-js/redirects).
