@@ -39,9 +39,7 @@ The `rewrites` option is an array of rewrite rules that will be applied to the r
 
 ### Redirects
 
-The `redirects` option is an array of redirect rules that will will result in the proxy returning a redirect response to the client.
-
-Each rule is an object with the following properties:
+The `redirects` option is an array of redirect rules that will will result in the proxy returning a redirect response to the client. Each rule is an object with the following properties:
 
 - **source** - The pattern to match against the requested URL pathname. Patterns can contain named parameters prefixed with a colon (e.g. `:path*`) and include a zero-or-more operator to match the rest of the path (e.g. `:path*`). Parameters are accessible in the `destination` URL using the same name. Learn more about formatting patterns in the [path-to-regexp](https://github.com/pillarjs/path-to-regexp) documentation.
 - **destination** - The URL to redirect the request to. Parameters from the `source` pattern can be used in the `destination` URL. Must be an absolute URL.
