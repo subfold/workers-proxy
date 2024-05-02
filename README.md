@@ -1,4 +1,4 @@
-# WIP: Cloudflare Workers Proxy
+# Cloudflare Workers Proxy
 
 A simple library for creating reverse proxies with Cloudflare Workers.
 
