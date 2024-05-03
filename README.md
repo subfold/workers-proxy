@@ -28,7 +28,7 @@ export default {
 
 ### Origin
 
-The `origin` option is the URL of the target server you want to proxy requests to.
+The `origin` option is the URL of the target server you want to proxy requests to. Traffic that doesn't match a rewrite or redirect rule will be proxied to this URL.
 
 ### Rewrites
 
